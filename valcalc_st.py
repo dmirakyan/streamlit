@@ -1,8 +1,5 @@
 import streamlit as st
 import pandas as pd
-from datetime import date
-import numpy as np
-import numpy_financial as npf
 import plotly.express as px
 import requests
 from itertools import cycle
