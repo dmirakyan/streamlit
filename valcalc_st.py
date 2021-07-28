@@ -1,15 +1,18 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
+import plotly.express as px    
+import plotly.graph_objects as go
 import requests
 from itertools import cycle
-
 
 st.set_page_config(layout="wide",page_title="Leaseback Calculator")
 st.title("Leaseback Calculator")
 st.subheader("A sale-leaseback can help business owners free up capital to grow their business and reduce their debt.")
-
 st.header("Property Details")
+
+
+
+
 with st.form("user_inputs"):
     col1, col2, col3 = st.beta_columns(3)
     with col1:
@@ -71,18 +74,65 @@ if calculate:
     response_j = response.json()
     chart_df  = pd.read_json(response_j['graph_array'])
 
+    plist = []
+    for p in response_j['total_profit']:
+        prof = round(p)
+        prof = str(prof)
+        prof = '$' + prof
+        print(prof)
+        plist.append(prof)
+        print(plist)        
+    
+    p_val = "# <center> <span style='color:green; margin-bottom:0;padding-bottom:0;'> " + plist[0] + " | " + plist[1] + " | " + plist[2] + "</span></center>"
+    print(p_val)
+    v1 = str(response_j['equity_unlocked'])
+    v1_val = "# <center> <span style='color:green'>  $" + v1 +  "</span></center>"
+
+    v2 = str(response_j['monthly_rent'])
+    v2_val = "# <center> <span style='color:gray'>  $" + v2 +  "</span></center>"
+
+    v3 = response_j['net_aan']*100
+    v3 = round(v3,1)
+    v3 = str(v3)
+    v3_val = "# <center> <span style='color:green'>" + v3 +  "%</span></center>"
+
 
     roe_fig = px.line(chart_df, x='year', y=["lb_roe","keep_roe"],title="Return on Equity",
-        labels={"value": "return on equity",})
+    labels={"value": "return on equity",})
     names = cycle(['Leaseback', 'Keep property'])
     roe_fig.for_each_trace(lambda t:  t.update(name = next(names)))
     roe_fig.layout.yaxis.tickformat = ',.0%'
     cprof_fig = px.line(chart_df, x='year', y=["delta_profit_cum"],title="Total profit",labels={"value": "total profit",})
     cprof_fig.update_layout(showlegend=False)
+
+    # st.plotly_chart(kpi_fig)
+    st.title("Results")
+    st.markdown(p_val,unsafe_allow_html=True)
+    st.markdown("### <center> Total profit at 5/10/15 years </center>",unsafe_allow_html=True)
+    st.markdown(" ")   
+
+    colh1,colh2,colh3 = st.beta_columns(3)
+    with colh1:
+        st.markdown(v1_val,unsafe_allow_html=True)
+        st.markdown("### <center> Equity Unlocked </center>",unsafe_allow_html=True)
+
+    with colh2:
+        st.markdown(v2_val,unsafe_allow_html=True)
+        st.markdown("### <center> Monthly rent </center>",unsafe_allow_html=True)
+    with colh3:
+        st.markdown(v3_val,unsafe_allow_html=True)
+        st.markdown("### <center> Net Average Annual Returns </center>",unsafe_allow_html=True)
+    st.markdown(" ")   
+
     colo1, colo2 = st.beta_columns(2)
     with colo1:
         st.plotly_chart(roe_fig)
     with colo2:
         st.plotly_chart(cprof_fig)
+
+    st.header("Under the hood")
+    st.subheader("Request")
+    st.write(url)
+    st.subheader("Response")
     st.write(response_j)
 
