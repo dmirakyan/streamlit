@@ -19,7 +19,7 @@ with st.form("user_inputs"):
         st.subheader("Estimated property value ($)")
         prop_value = st.number_input("Not sure how much your property is worth? Contact us and get an estimate within 24 hours.", min_value=0, value=2500000)
         st.subheader("Business industry")
-        industry = st.selectbox("", options=['Fun','Scary'])
+        industry = st.selectbox("", options=['Medical','Veterinary','Restaurant','Industrial','Other'])
     with col2:
         st.subheader("Yearly appreciation (%)")
         annual_apprec = st.number_input("How much do you expect your property to increase in value year over year (not adjusted for inflation)?", min_value=0.0, value=4.5,format='%f')/100
